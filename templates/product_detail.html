@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.title }} - Sample School Marketplace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="product-detail">
+        <div class="product-detail-image">
+            <img src="{{ product.image_url }}" alt="{{ product.title }}">
+        </div>
+        
+        <div class="product-detail-info">
+            <div class="product-detail-header">
+                <h1>{{ product.title }}</h1>
+                <div class="product-detail-price">${{ "%.2f"|format(product.price) }}</div>
+            </div>
+            
+            <div class="product-detail-meta">
+                <div class="meta-item">
+                    <i class="fas fa-tag"></i>
+                    <span>{{ product.category }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-star"></i>
+                    <span>{{ product.condition }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-user"></i>
+                    <span>{{ product.seller.name }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>{{ product.created_at.strftime('%B %d, %Y') }}</span>
+                </div>
+            </div>
+            
+            <div class="product-detail-description">
+                <h3>Description</h3>
+                <p>{{ product.description }}</p>
+            </div>
+            
+            {% if session.user_id and session.user_id != product.seller_id %}
+                <div class="product-detail-actions">
+                    <a href="{{ url_for('chat', product_id=product.id) }}" class="btn btn-primary btn-large">
+                        <i class="fas fa-comment"></i> Message Seller
+                    </a>
+                </div>
+            {% elif not session.user_id %}
+                <div class="product-detail-actions">
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">
+                        <i class="fas fa-sign-in-alt"></i> Login to Message Seller
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

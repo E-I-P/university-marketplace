@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Chat - {{ product.title }} - Sample School Marketplace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="chat-product-info">
+                <img src="{{ product.image_url }}" alt="{{ product.title }}" class="chat-product-image">
+                <div>
+                    <h3>{{ product.title }}</h3>
+                    <p>Chatting with {{ product.seller.name }}</p>
+                    <span class="chat-price">${{ "%.2f"|format(product.price) }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            {% for message in messages %}
+                <div class="message {% if message.sender_id == session.user_id %}message-sent{% else %}message-received{% endif %}">
+                    <div class="message-content">{{ message.content }}</div>
+                    <div class="message-time">
+                        {{ message.sender.name }} - {{ message.timestamp.strftime('%m/%d %H:%M') }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="chat-input">
+            <form id="messageForm" class="message-form">
+                <input type="hidden" id="productId" value="{{ product.id }}">
+                <div class="message-input-group">
+                    <input type="text" id="messageInput" placeholder="Type your message..." class="message-input" required>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messageForm = document.getElementById('messageForm');
+    const messageInput = document.getElementById('messageInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const productId = document.getElementById('productId').value;
+    
+    // Scroll to bottom of messages
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    scrollToBottom();
+    
+    messageForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const content = messageInput.value.trim();
+        if (!content) return;
+        
+        try {
+            const response = await fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    content: content
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Add message to chat
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message message-sent';
+                messageDiv.innerHTML = `
+                    <div class="message-content">${content}</div>
+                    <div class="message-time">${data.message.sender_name} - ${new Date().toLocaleString('en-US', {month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})}</div>
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+                messageInput.value = '';
+                scrollToBottom();
+            } else {
+                alert('Failed to send message: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+            alert('Failed to send message. Please try again.');
+        }
+    });
+});
+</script>
+{% endblock %}

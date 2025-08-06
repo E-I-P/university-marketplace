@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Sample School Marketplace{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+            <p>Sign in to your account</p>
+        </div>
+        
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="identifier">Email or Registration Number</label>
+                <input type="text" id="identifier" name="identifier" required 
+                       placeholder="john@sampleschool.edu or H200000A" class="form-input">
+                <small class="form-help">Use your email or registration number (format: H200000A)</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="Enter your password" class="form-input">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+        </div>
+        
+        <div class="test-credentials">
+            <h4>Test Credentials:</h4>
+            <ul>
+                <li><strong>Email:</strong> john@sampleschool.edu | <strong>Password:</strong> password123</li>
+                <li><strong>Reg Number:</strong> H200003C | <strong>Password:</strong> password123</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
